@@ -2,7 +2,12 @@ package com.example.caja.ViewModel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.caja.interfces.RetrofitInstance
+import com.example.caja.models.Document
 import com.example.caja.ui.boxes.ProductoVenta
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 class PaymentViewModel : ViewModel() {
     val itemSelect = mutableStateListOf<ProductoVenta>()
@@ -27,4 +32,5 @@ class PaymentViewModel : ViewModel() {
             itemSelect.removeAt(index)
         }
     }
+
 }

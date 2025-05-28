@@ -31,14 +31,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import com.example.caja.ViewModel.TablesViewModel
 import com.example.caja.TablesViewModelFactory
+import com.example.caja.ViewModel.SendPaymentViewModel
 import com.example.caja.models.Country
 import com.example.caja.models.Department
 import com.example.caja.models.District
+import com.example.caja.models.Document
+import com.example.caja.models.DocumentItem
 import com.example.caja.models.IdentityDocumentType
 import com.example.caja.models.Province
-
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.LocalDate
+import com.example.caja.SendPaymentViewModelFactory
 
 @Composable
 fun CajaView(tokenManager: TokenManager, paymentViewModel: PaymentViewModel,) {
@@ -52,17 +61,15 @@ fun CajaView(tokenManager: TokenManager, paymentViewModel: PaymentViewModel,) {
     val clientes = persons.map { it.name }
     val paymentViewModel: PaymentViewModel = viewModel()
     val tables by tablesViewModel.tablesResponse.collectAsState()
-    //val countries = tables?.tables?.countries ?: emptyList<Country>()
-   // val departments = tables?.tables?.departments ?: emptyList<Department>()
-    //val provinces = tables?.tables?.provinces ?: emptyList<Province>()
-    //val districts = tables?.tables?.districts ?: emptyList<District>()
-    //val identityDocumentTypes = tables?.tables?.identityDocumentTypes ?: emptyList<IdentityDocumentType>()
+    val sendPaymentViewModel: SendPaymentViewModel = viewModel(factory = SendPaymentViewModelFactory(tokenManager))
 
     val countries = tables?.countries ?: emptyList<Country>()
     val departments = tables?.departments ?: emptyList<Department>()
     val provinces = tables?.provinces ?: emptyList<Province>()
     val districts = tables?.districts ?: emptyList<District>()
     val identityDocumentTypes = emptyList<IdentityDocumentType>()
+
+
 
 
     LaunchedEffect(Unit) {
@@ -73,7 +80,7 @@ fun CajaView(tokenManager: TokenManager, paymentViewModel: PaymentViewModel,) {
         departments,
         provinces,
         districts,
-        identityDocumentTypes, tablesViewModel)
+        identityDocumentTypes, tablesViewModel, sendPaymentViewModel)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +90,7 @@ fun CajaViewPerson(persons: List<Persons>, paymentViewModel: PaymentViewModel, c
                    provinces: List<Province>,
                    districts: List<District>,
                    identityDocumentTypes: List<IdentityDocumentType>,
-                   tablesViewModel: TablesViewModel) {
+                   tablesViewModel: TablesViewModel, sendPaymentViewModel: SendPaymentViewModel) {
 
     var mostrarFormulario by remember { mutableStateOf(false) }
     var tipoDocumento by remember { mutableStateOf("Factura") }
@@ -91,8 +98,22 @@ fun CajaViewPerson(persons: List<Persons>, paymentViewModel: PaymentViewModel, c
     var expanded by remember { mutableStateOf(false) }
     var clienteSeleccionado by remember { mutableStateOf<String?>(null) }
     val productosSeleccionados = paymentViewModel.itemSelect
+    val total = productosSeleccionados.sumOf { it.precio * it.cantidad }
+    val horaActual = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+    val fechaActual = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+    val cliente = persons.find { it.name == clienteSeleccionado }
+    val customerId = cliente?.id ?: 0
+    val snackbarHostState = remember { SnackbarHostState() }
+    val ventaExitosa by sendPaymentViewModel.ventaExitosa.collectAsState()
 
 
+    LaunchedEffect(ventaExitosa) {
+        if (ventaExitosa) {
+            paymentViewModel.itemSelect.clear()
+            snackbarHostState.showSnackbar("¡Venta realizada con éxito!")
+            sendPaymentViewModel.resetVentaExitosa()
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -277,26 +298,49 @@ fun CajaViewPerson(persons: List<Persons>, paymentViewModel: PaymentViewModel, c
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Botón inferior izquierdo
             Button(
-                onClick = { /* Lógica para crear cliente */ },
+                onClick = {
+                    val document = Document(
+                        customer_id = customerId,
+                        series = "B001",
+                        number = "0001",
+                        date_of_issue = fechaActual,
+                        time_of_issue = horaActual,
+                        status_type_id = "01",
+                        total = total,
+                        items = productosSeleccionados.map { producto ->
+                            DocumentItem(
+                                item_id = producto.id,
+                                quantity = producto.cantidad,
+                                sale_unit_price = producto.precio,
+                                total = producto.precio * producto.cantidad
+                            )
+                        }
+                    )
+                    sendPaymentViewModel.enviarVenta(document)
+                },
                 modifier = Modifier
                     .width(100.dp)
                     .height(40.dp)
             ) {
                 Text("COBRAR", fontSize = 12.sp)
             }
-
             Text(
-                text = "TOTAL 40",
+                text = "Total: S/ ${"%.2f".format(total)}",
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                color = Color.Black,
+                modifier = Modifier.padding(end = 16.dp)
             )
+        }
+        SnackbarHost(hostState = snackbarHostState) { data ->
+            Snackbar(snackbarData = data)
         }
     }
 }
 
 data class ProductoVenta(
+    val id: Int,
     val nombre: String,
     val cantidad: Int,
     val precio: Double

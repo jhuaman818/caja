@@ -97,7 +97,7 @@ fun ProductListScreen(tokenManager: TokenManager, paymentViewModel: PaymentViewM
                 items(filteredItems) { item ->
                     ProductCard(item = item, onFood = {
                         val nuevo = paymentViewModel.agregarProducto(
-                            ProductoVenta(item.description, 1, item.price)
+                            ProductoVenta(item.id, item.description, 1, item.price)
                         )
                         snackbarMessage = if (nuevo) "Producto agregado" else "Cantidad actualizada"
                     })

@@ -251,12 +251,22 @@ fun DistrictDropdown(
     onDistrictSelected: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    if (districts.isEmpty()) {
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Distrito (sin datos)") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        return
+    }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = districts.find { it.id.toString() == selectedDistrict }?.description ?: "",
+            value = districts.find { it.id?.toString() == selectedDistrict }?.description.orEmpty(),
             onValueChange = {},
             readOnly = true,
             label = { Text("Distrito") },

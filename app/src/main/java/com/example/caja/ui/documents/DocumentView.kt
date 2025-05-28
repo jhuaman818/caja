@@ -9,15 +9,33 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
 
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.caja.ViewModel.DocumentViewModel
+import com.example.caja.DocumentViewModelFactory
+import com.example.caja.TokenManager
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+
 @Composable
-fun ComprobanteVista() {
+fun ComprobanteVista(tokenManager: TokenManager) {
+    val documentViewModel: DocumentViewModel = viewModel(
+        factory = DocumentViewModelFactory(tokenManager)
+    )
+    val documentos by documentViewModel.document.collectAsState()
+    LaunchedEffect(Unit) {
+        documentViewModel.fetchDocuments()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Botones BOLETA y NOTA VENTA
+        // Botones arriba
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -37,39 +55,48 @@ fun ComprobanteVista() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Tarjeta con datos y botones PDF
-        Card(
-            shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
-            modifier = Modifier.fillMaxWidth()
+        // Lista con scroll
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f) // Ocupa el espacio restante
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("CLIENTE: JOSE HUAMAN PEZO", fontWeight = FontWeight.Bold)
-                    Text("DOCUMENTO: 78718846")
-                    Text("F001-234")
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+            items(documentos) { doc ->
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = CardDefaults.cardElevation(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 ) {
-                    repeat(3) {
-                        Button(
-                            onClick = { /* Acción PDF */ },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Red,
-                                contentColor = Color.White
-                            ),
-                            shape = RoundedCornerShape(50),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                            modifier = Modifier.height(30.dp)
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text("CLIENTE: ${doc.customer_name ?: "Cargando..."}", fontWeight = FontWeight.Bold)
+                            Text("DOCUMENTO: ${doc.customer_number ?: ""}")
+                            Text("${doc.series ?: ""}-${doc.number ?: ""}")
+                        }
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("PDF")
+                            repeat(3) {
+                                Button(
+                                    onClick = { /* Acción PDF */ },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Red,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(50),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                                    modifier = Modifier.height(30.dp)
+                                ) {
+                                    Text("PDF")
+                                }
+                            }
                         }
                     }
                 }

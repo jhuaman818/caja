@@ -1,6 +1,6 @@
 package com.example.caja.models
 
-data class DocumentRequest (
+data class Document (
 
     val customer_id: Int,
     val series: String,
@@ -9,5 +9,5 @@ data class DocumentRequest (
     val time_of_issue: String,
     val status_type_id: String,
     val total: Double,
-    val items: List<DocumentItemRequest>
+    val items: List<DocumentItem>
 )

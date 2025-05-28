@@ -46,7 +46,7 @@ fun HomeScreen(tokenManager: TokenManager) {
 
                 1 -> CajaView(tokenManager, paymentViewModel) // ✅ Caja
                 2 -> DashboardView()
-                3 -> ComprobanteVista()
+                3 -> ComprobanteVista(tokenManager)
             }
         }
     }
