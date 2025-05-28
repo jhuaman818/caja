@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,12 +29,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.*
 import androidx.compose.foundation.lazy.LazyRow
+import com.example.caja.ViewModel.PaymentViewModel
+import com.example.caja.ui.boxes.ProductoVenta
+
+
 @Composable
-fun ProductListScreen(tokenManager: TokenManager) {
+fun ProductListScreen(tokenManager: TokenManager, paymentViewModel: PaymentViewModel) {
     val viewModel: ItemViewModel = viewModel(
        factory = ItemViewModelFactory(tokenManager)
     )
     val items by viewModel.items.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
     val categories by viewModel.categories.collectAsState()
 
@@ -52,50 +58,59 @@ fun ProductListScreen(tokenManager: TokenManager) {
        viewModel.fetchCategories()
     }
 
-    Column(modifier = Modifier.padding(8.dp)) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues).padding(8.dp)) {
+            // Buscador
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                label = { Text("Buscar") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
 
-        // BUSCADOR
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            label = { Text("Buscar") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
-        )
-
-        val categories by viewModel.categories.collectAsState()
-
-        // CATEGORÍAS EN CÍRCULOS
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            items(categories) { category ->
-                CategoryCircle(
-                    label = category.category,
-                    selected = category.id == selectedCategoryId,
-                    onClick = {
-                        selectedCategoryId = if (selectedCategoryId == category.id) null else category.id
-                    }
-                )
+            // Categorías
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                items(categories) { category ->
+                    CategoryCircle(
+                        label = category.category,
+                        selected = category.id == selectedCategoryId,
+                        onClick = {
+                            selectedCategoryId = if (selectedCategoryId == category.id) null else category.id
+                        }
+                    )
+                }
             }
-        }
 
-        // LISTADO DE PRODUCTOS FILTRADO
-        LazyColumn {
-            items(filteredItems) { item ->
-                ProductCard(item = item)
+            // Lista de productos
+            LazyColumn (
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                items(filteredItems) { item ->
+                    ProductCard(item = item, onFood = {
+                        val nuevo = paymentViewModel.agregarProducto(
+                            ProductoVenta(item.description, 1, item.price)
+                        )
+                        snackbarMessage = if (nuevo) "Producto agregado" else "Cantidad actualizada"
+                    })
+                }
             }
         }
     }
-
-    //LazyColumn {
-    //    items(items) { item ->
-    //        ProductCard(item = item)
-     //   }
-    //}
+    LaunchedEffect(snackbarMessage) {
+        snackbarMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            snackbarMessage = null
+        }
+    }
 }
 
 @Composable
@@ -117,9 +132,8 @@ fun CategoryCircle(label: String, selected: Boolean, onClick: () -> Unit) {
     }
 }
 
-
 @Composable
-fun ProductCard(item: Items) {
+fun ProductCard(item: Items, onFood: () -> Unit = {}) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier
@@ -128,11 +142,9 @@ fun ProductCard(item: Items) {
             .height(150.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-
             val painter = rememberAsyncImagePainter(
                 model = item.image ?: "https://via.placeholder.com/150"
             )
-
             Image(
                 painter = painter,
                 contentDescription = item.description,
@@ -141,18 +153,15 @@ fun ProductCard(item: Items) {
                     .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Text(text = "S/.${item.price}", fontWeight = FontWeight.Bold)
             Text(text = item.description)
             Text(text = item.internal_id)
-
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
                 Button(
-                    onClick = { /* TODO: Agregar al carrito */ },
+                    onClick = onFood,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(8.dp)

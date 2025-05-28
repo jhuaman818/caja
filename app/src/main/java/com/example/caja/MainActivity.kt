@@ -12,36 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 
-//class MainActivity : ComponentActivity() {
-//
-//    private lateinit var tokenManager: TokenManager
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//           val navController = rememberNavController()
-//           NavHost(navController = navController, startDestination = "login") {
-//                composable("login") {
-//                    //LoginScreen(onLoginSuccess = {
-//                     //   navController.navigate("home")
-////                    //})
-//
-//                   LoginScreen(onLoginSuccess = { token ->
-//                        // GUARDAR EL TOKEN AQUÍ
-//                        lifecycleScope.launch {
-//                           tokenManager.saveToken(token)
-//                       }
-//                        navController.navigate("home")
-//                   })
-//               }
-//               composable("home") {
-//                   HomeScreen(tokenManager)
-//               }
-//            }
-//        }
-//    }
-//}
-
 class MainActivity : ComponentActivity() {
 
     private lateinit var tokenManager: TokenManager

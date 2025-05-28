@@ -12,12 +12,15 @@ import com.example.caja.ui.documents.ComprobanteVista
 import com.example.caja.ui.item.ProductListScreen
 import com.example.caja.ui.reports.DashboardView
 import com.example.caja.TokenManager
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.caja.ViewModel.PaymentViewModel
 
 @Composable
 fun HomeScreen(tokenManager: TokenManager) {
     val items = listOf("Productos", "Caja", "Reporte", "documentos")
     val icons = listOf(Icons.Filled.ShoppingCart, Icons.Filled.ShoppingCart, Icons.Filled.Report, Icons.Filled.Description)
     var selectedItem by remember { mutableStateOf(0) }
+    val paymentViewModel: PaymentViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -39,8 +42,9 @@ fun HomeScreen(tokenManager: TokenManager) {
                 .padding(innerPadding)
         ) {
             when (selectedItem) {
-                0 -> ProductListScreen(tokenManager) // ✅ Productos
-                1 -> CajaView(tokenManager) // ✅ Caja
+                0 -> ProductListScreen(tokenManager, paymentViewModel) // ✅ Productos
+
+                1 -> CajaView(tokenManager, paymentViewModel) // ✅ Caja
                 2 -> DashboardView()
                 3 -> ComprobanteVista()
             }

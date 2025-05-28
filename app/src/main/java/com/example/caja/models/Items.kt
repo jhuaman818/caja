@@ -15,5 +15,4 @@ data class Items(
     val created_at: String?,
     val updated_at: String?,
     val unit_type_id: String?,
-    var quantity: Int = 0
 )

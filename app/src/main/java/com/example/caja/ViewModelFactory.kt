@@ -2,6 +2,7 @@ package com.example.caja
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.caja.ViewModel.PersonViewModel
 
 class ItemViewModelFactory(private val tokenManager: TokenManager) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -12,3 +13,15 @@ class ItemViewModelFactory(private val tokenManager: TokenManager) : ViewModelPr
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+//class MyViewModelFactory(private val tokenManager: TokenManager) : ViewModelProvider.Factory {
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//        return when {
+//            modelClass.isAssignableFrom(PersonViewModel::class.java) ->
+//                PersonViewModel(tokenManager) as T
+//            modelClass.isAssignableFrom(ItemViewModel::class.java) ->
+//                ItemViewModel(tokenManager) as T
+//            else -> throw IllegalArgumentException("Unknown ViewModel class")
+//        }
+//    }
+//}

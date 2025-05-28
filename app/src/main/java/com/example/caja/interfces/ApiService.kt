@@ -9,6 +9,8 @@ import retrofit2.http.POST
 import retrofit2.Call
 import retrofit2.http.GET
 import com.example.caja.models.DocumentRequest
+import com.example.caja.models.Persons
+import com.example.caja.models.TablesResponse
 import retrofit2.http.Header
 import retrofit2.Response
 
@@ -28,5 +30,21 @@ interface ApiService {
     suspend fun getCategories(
         @Header("Authorization") token: String
     ): Response<List<Categories>>
+
+    @GET("persons")
+    suspend fun getPersons(
+        @Header("Authorization") token: String
+    ): Response<List<Persons>>
+
+    //@GET("persons/tables")
+    //suspend fun getTables(
+    //    @Header("Authorization") token: String
+    //): Response<List<TablesResponse>>
+
+    @GET("persons/tables")
+    suspend fun getTables(
+        @Header("Authorization") token: String
+    ): Response<TablesResponse>
+
 }
 data class LoginRequest(val email: String, val password: String)
