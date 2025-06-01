@@ -1,6 +1,7 @@
 package com.example.caja.ui.home
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
@@ -80,7 +81,7 @@ fun ModernNavigationBar(
     onItemSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val selectedColor = Color(0xFF293161) // Color de fondo para el ítem seleccionado
+    val selectedColor = Color(0xFF073f68) // Color de fondo para el ítem seleccionado
 
     NavigationBar(
         modifier = modifier

@@ -89,7 +89,7 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF293161)) // Azul Material
+            .background(Color(0xFF073f68)) // Azul Material
     ) {
 
         // Contenedor principal
@@ -126,7 +126,7 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
                         Icon(
                             imageVector = Icons.Default.Email,
                             contentDescription = "Email",
-                            tint = Color (0xFF293161)
+                            tint = Color (0xFF073f68)
                         )
                     },
                     colors = TextFieldDefaults.colors(
@@ -134,11 +134,11 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
                         unfocusedTextColor = Color.Black,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color(0xFF293161),
-                        unfocusedIndicatorColor = Color(0xFF293161).copy(alpha = 0.7f),
-                        focusedLabelColor = Color(0xFF293161),
-                        unfocusedLabelColor = Color(0xFF293161).copy(alpha = 0.7f),
-                        cursorColor = Color(0xFF293161)
+                        focusedIndicatorColor = Color(0xFF073f68),
+                        unfocusedIndicatorColor = Color(0xFF073f68).copy(alpha = 0.7f),
+                        focusedLabelColor = Color(0xFF073f68),
+                        unfocusedLabelColor = Color(0xFF073f68).copy(alpha = 0.7f),
+                        cursorColor = Color(0xFF073f68)
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     singleLine = true
@@ -154,7 +154,7 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
                         Icon(
                             imageVector = Icons.Default.Lock,
                             contentDescription = "Contraseña",
-                            tint = Color (0xFF293161)
+                            tint = Color (0xFF073f68)
                         )
                     },
                     visualTransformation = PasswordVisualTransformation(),
@@ -163,11 +163,11 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
                         unfocusedTextColor = Color.Black,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color(0xFF293161),
-                        unfocusedIndicatorColor = Color(0xFF293161).copy(alpha = 0.7f),
-                        focusedLabelColor = Color(0xFF293161),
-                        unfocusedLabelColor = Color(0xFF293161).copy(alpha = 0.7f),
-                        cursorColor = Color(0xFF293161)
+                        focusedIndicatorColor = Color(0xFF073f68),
+                        unfocusedIndicatorColor = Color(0xFF073f68).copy(alpha = 0.7f),
+                        focusedLabelColor = Color(0xFF073f68),
+                        unfocusedLabelColor = Color(0xFF073f68).copy(alpha = 0.7f),
+                        cursorColor = Color(0xFF073f68)
                     ),
                     singleLine = true
                 )
@@ -199,7 +199,7 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF293161),
+                        containerColor = Color(0xFF073f68),
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp)
@@ -352,7 +352,7 @@ fun CenteredMessage(
                 } else {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
-                        color = Color(0xFF293161),
+                        color = Color(0xFF073f68),
                         strokeWidth = 2.dp
                     )
                 }
